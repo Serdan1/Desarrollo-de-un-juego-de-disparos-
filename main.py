@@ -2,8 +2,8 @@
 import pygame
 from game import Game
 
-# Inicializar Pygame sin sonido
-pygame.mixer.pre_init(0)  # Desactiva el módulo de sonido
+# Desactivar el módulo de sonido antes de inicializar Pygame
+pygame.mixer.pre_init(0)  # Esto desactiva el sonido
 pygame.init()
 
 # Configurar la pantalla
