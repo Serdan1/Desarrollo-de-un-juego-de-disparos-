@@ -1,7 +1,7 @@
 # player.py
 import pygame
 from character import Character
-from shot import Shot
+from shot import Shot  
 
 class Player(Character):
     def __init__(self, x, y, image):
@@ -55,4 +55,3 @@ class Player(Character):
     def draw(self, screen):
         if self.is_alive:
             pygame.draw.rect(screen, (0, 255, 0), (self.x, self.y, self.width, self.height))
-            
