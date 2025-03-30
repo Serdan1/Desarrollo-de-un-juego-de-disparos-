@@ -18,22 +18,26 @@ class Opponent(Character):
         if self.is_star or not self.is_alive:
             return
         self.x += self.speed * self.direction
-        if self.x <= 0 or self.x >= 800 - self.width:
-            self.direction *= -1
+        # Cambiar dirección si llega a los bordes
+        if self.x <= 0:
+            self.direction = 1
+        elif self.x >= 800 - self.width:
+            self.direction = -1
 
     def shoot(self):
-        # Dispara hacia abajo cada cierto tiempo
+        # Dispara hacia abajo cada 2 segundos
         current_time = pygame.time.get_ticks()
-        if current_time - self.shoot_timer >= 2000 and self.is_alive and not self.is_star:
+        if current_time - self.shoot_timer >= 2000:  # 2 segundos
             self.shoot_timer = current_time
             return Shot(self.x + self.width // 2, self.y + self.height, "bullet", direction=1)
         return None
 
-    def collide(self, shots, game):
-        if not self.is_alive or self.is_star:
-            return
+    def collide(self, shots):
+        if self.is_star or not self.is_alive:
+            return False
         # Verifica colisiones con disparos del jugador
-        for shot in shots:
+        for i in range(len(shots) - 1, -1, -1):  # Iteramos en orden inverso para evitar problemas al eliminar
+            shot = shots[i]
             if shot.direction == -1:  # Disparos del jugador van hacia arriba
                 shot_rect = pygame.Rect(shot.x, shot.y, 10, 10)
                 opponent_rect = pygame.Rect(self.x, self.y, self.width, self.height)
@@ -42,13 +46,15 @@ class Opponent(Character):
                     if self.lives <= 0:
                         self.is_alive = False
                         self.is_star = True
-                        game.score += 1  # Incrementa la puntuación
-                    shots.remove(shot)
-                    break
+                    shots.pop(i)  # Usamos pop() en lugar de remove() para eliminar por índice
+                    return True
+        return False
 
     def draw(self, screen):
-        if self.is_alive and not self.is_star:
+        if not self.is_alive:
+            return
+        if self.is_star:
+            pygame.draw.circle(screen, (255, 255, 0), (self.x + self.width // 2, self.y + self.height // 2), 10)
+        else:
             pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y, self.width, self.height))
-        elif self.is_star:
-            # Representa una estrella con un color diferente
-            pygame.draw.rect(screen, (255, 255, 0), (self.x, self.y, self.width, self.height))
+            

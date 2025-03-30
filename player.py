@@ -1,7 +1,7 @@
 # player.py
 import pygame
 from character import Character
-from shot import Shot  
+from shot import Shot
 
 class Player(Character):
     def __init__(self, x, y, image):
@@ -28,7 +28,8 @@ class Player(Character):
         if not self.is_alive:
             return
         # Verifica colisiones con disparos enemigos
-        for shot in shots:
+        for i in range(len(shots) - 1, -1, -1):  # Iteramos en orden inverso
+            shot = shots[i]
             if shot.direction == 1:  # Disparos enemigos van hacia abajo
                 shot_rect = pygame.Rect(shot.x, shot.y, 10, 10)
                 player_rect = pygame.Rect(self.x, self.y, self.width, self.height)
@@ -39,7 +40,7 @@ class Player(Character):
                     else:
                         self.is_alive = False
                         self.respawn_timer = pygame.time.get_ticks()  # Inicia temporizador para renacer
-                    shots.remove(shot)
+                    shots.pop(i)  # Usamos pop() en lugar de remove()
                     break
 
     def respawn(self):
